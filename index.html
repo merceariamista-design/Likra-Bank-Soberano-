@@ -6,12 +6,13 @@
 
 <style>
 body{
-    background:#0b0b0b;
-    color:#e6e6e6;
-    font-family:Arial, sans-serif;
+    margin:0;
+    background:#0a0a0a;
+    color:#e5e5e5;
+    font-family:Arial, Helvetica, sans-serif;
 }
 header{
-    background:#121212;
+    background:#111;
     padding:15px;
     text-align:center;
     font-size:26px;
@@ -27,6 +28,7 @@ header{
     padding:12px;
     margin-bottom:15px;
 }
+h3{margin-top:0}
 button{
     background:#1f8cff;
     border:none;
@@ -36,9 +38,7 @@ button{
     cursor:pointer;
     margin:3px 0;
 }
-button:hover{
-    background:#0f6ddb;
-}
+button:hover{background:#0f6ddb}
 input{
     width:100%;
     padding:6px;
@@ -46,20 +46,19 @@ input{
 }
 .flex{
     display:flex;
-    justify-content:space-between;
-    gap:10px;
     flex-wrap:wrap;
+    gap:10px;
 }
-.green{color:#3cff6a;}
-.red{color:#ff4d4d;}
-.small{font-size:13px;color:#aaa;}
+.small{font-size:13px;color:#aaa}
 .log{
-    max-height:200px;
+    max-height:220px;
     overflow-y:auto;
-    font-size:13px;
     background:#0f0f0f;
-    padding:6px;
+    padding:8px;
+    font-size:13px;
 }
+.green{color:#3cff6a}
+.red{color:#ff4d4d}
 </style>
 </head>
 
@@ -70,15 +69,14 @@ input{
 <div class="container">
 
 <div class="box">
-<h3>Saldo</h3>
-<p>Likra: <strong id="saldo">0</strong> K$</p>
-<p class="small">Investido: <span id="investido">0</span> K$</p>
+<h3>Conta do Usuário</h3>
+<p>Saldo: <strong id="saldo"></strong> K$</p>
+<p>Investido: <strong id="investido"></strong> K$</p>
 </div>
 
 <div class="box">
 <h3>Câmbio Internacional</h3>
-<p class="small">Taxa: 3,7%</p>
-
+<p class="small">Taxa: 3,7% por operação</p>
 <div class="flex">
 <div>
 <strong>Ouro (OR £)</strong><br>
@@ -86,14 +84,12 @@ Preço: <span id="ouro"></span><br>
 <button onclick="comprarMoeda('ouro')">Comprar</button>
 <button onclick="venderMoeda('ouro')">Vender</button>
 </div>
-
 <div>
 <strong>Petra (PT €)</strong><br>
 Preço: <span id="petra"></span><br>
 <button onclick="comprarMoeda('petra')">Comprar</button>
 <button onclick="venderMoeda('petra')">Vender</button>
 </div>
-
 <div>
 <strong>Baxe (BX ¥)</strong><br>
 Preço: <span id="baxe"></span><br>
@@ -106,13 +102,14 @@ Preço: <span id="baxe"></span><br>
 <div class="box">
 <h3>Fundo Soberano Likra</h3>
 <p>Saldo: <strong id="fundo"></strong> K$</p>
+<p class="small">Recebe todas as taxas do sistema</p>
 </div>
 
 <div class="box">
 <h3>Empréstimos</h3>
-<p class="small">Juros: 1,8% ao dia</p>
-<input type="number" id="valorEmprestimo" placeholder="Valor">
-<button onclick="emprestimo()">Solicitar</button>
+<p class="small">1,8% de juros ao dia</p>
+<input id="valorEmprestimo" type="number" placeholder="Valor do empréstimo">
+<button onclick="solicitarEmprestimo()">Solicitar</button>
 <button onclick="pagarEmprestimo()">Pagar</button>
 </div>
 
@@ -125,7 +122,7 @@ Preço: <span id="baxe"></span><br>
 <div class="box">
 <h3>Imóveis Likra</h3>
 <p class="small">Taxa sobre aluguel: 0,23%</p>
-<button onclick="comprarImovel()">Comprar Imóvel</button>
+<button onclick="comprarImovel()">Comprar Imóvel (1000 K$)</button>
 <button onclick="receberAluguel()">Receber Aluguel</button>
 </div>
 
@@ -138,92 +135,90 @@ Preço: <span id="baxe"></span><br>
 </div>
 
 <div class="box">
-<h3>Histórico</h3>
+<h3>Histórico Financeiro</h3>
 <div id="historico" class="log"></div>
 </div>
 
 </div>
 
 <script>
-let data = JSON.parse(localStorage.getItem("likra")) || {
+let jogo = JSON.parse(localStorage.getItem("likraBank")) || {
     saldo:3000,
-    fundo:7000000000,
     investido:0,
+    fundo:7000000000,
     emprestimo:0,
     imoveis:0,
-    moedas:{
-        ouro:23.66,
-        petra:34.89,
-        baxe:4.89
-    },
+    moedas:{ ouro:23.66, petra:34.89, baxe:4.89 },
     precoAcao:100,
     historico:[]
 };
 
 function salvar(){
-    localStorage.setItem("likra", JSON.stringify(data));
+    localStorage.setItem("likraBank", JSON.stringify(jogo));
 }
 
 function log(txt){
-    data.historico.unshift(new Date().toLocaleString()+" - "+txt);
-    if(data.historico.length>50) data.historico.pop();
+    jogo.historico.unshift(new Date().toLocaleString()+" - "+txt);
+    if(jogo.historico.length>60) jogo.historico.pop();
     salvar();
     render();
 }
 
 function render(){
-    saldo.innerText=data.saldo.toFixed(2);
-    fundo.innerText=data.fundo.toLocaleString();
-    investido.innerText=data.investido.toFixed(2);
-    ouro.innerText=data.moedas.ouro.toFixed(2);
-    petra.innerText=data.moedas.petra.toFixed(2);
-    baxe.innerText=data.moedas.baxe.toFixed(2);
-    precoAcao.innerText=data.precoAcao.toFixed(2);
-    variacao.innerText=((Math.random()*2-1).toFixed(2))+"%";
-    historico.innerHTML=data.historico.join("<br>");
+    saldo.innerText=jogo.saldo.toFixed(2);
+    investido.innerText=jogo.investido.toFixed(2);
+    fundo.innerText=jogo.fundo.toLocaleString();
+    ouro.innerText=jogo.moedas.ouro.toFixed(2);
+    petra.innerText=jogo.moedas.petra.toFixed(2);
+    baxe.innerText=jogo.moedas.baxe.toFixed(2);
+    precoAcao.innerText=jogo.precoAcao.toFixed(2);
+    historico.innerHTML=jogo.historico.join("<br>");
 }
 
-function variacaoMercado(){
-    for(let m in data.moedas){
-        data.moedas[m]*=(1+(Math.random()*0.04-0.02));
+function mercado(){
+    for(let m in jogo.moedas){
+        jogo.moedas[m]*=(1+(Math.random()*0.04-0.02));
     }
-    data.precoAcao*=(1+(Math.random()*0.05-0.025));
+    let v=(Math.random()*6-3).toFixed(2);
+    jogo.precoAcao*=(1+v/100);
+    variacao.innerText=v+"%";
+    variacao.className=v>=0?"green":"red";
     salvar();
     render();
 }
 
 function comprarMoeda(m){
-    let custo=data.moedas[m]*1.037;
-    if(data.saldo>=custo){
-        data.saldo-=custo;
-        data.fundo+=data.moedas[m]*0.037;
+    let custo=jogo.moedas[m]*1.037;
+    if(jogo.saldo>=custo){
+        jogo.saldo-=custo;
+        jogo.fundo+=jogo.moedas[m]*0.037;
         log("Compra de "+m);
     }
 }
 
 function venderMoeda(m){
-    let ganho=data.moedas[m]*0.963;
-    data.saldo+=ganho;
-    data.fundo+=data.moedas[m]*0.037;
+    let ganho=jogo.moedas[m]*0.963;
+    jogo.saldo+=ganho;
+    jogo.fundo+=jogo.moedas[m]*0.037;
     log("Venda de "+m);
 }
 
-function emprestimo(){
+function solicitarEmprestimo(){
     let v=Number(valorEmprestimo.value);
     if(v>0){
-        data.emprestimo+=v;
-        data.saldo+=v;
+        jogo.emprestimo+=v;
+        jogo.saldo+=v;
         log("Empréstimo tomado: "+v);
     }
 }
 
 function pagarEmprestimo(){
-    let juros=data.emprestimo*0.018;
-    let total=data.emprestimo+juros;
-    if(data.saldo>=total){
-        data.saldo-=total;
-        data.fundo+=juros;
-        data.emprestimo=0;
+    let juros=jogo.emprestimo*0.018;
+    let total=jogo.emprestimo+juros;
+    if(jogo.saldo>=total){
+        jogo.saldo-=total;
+        jogo.fundo+=juros;
+        jogo.emprestimo=0;
         log("Empréstimo quitado");
     }
 }
@@ -233,38 +228,38 @@ function emitirTitulo(){
 }
 
 function comprarImovel(){
-    if(data.saldo>=1000){
-        data.saldo-=1000;
-        data.imoveis++;
+    if(jogo.saldo>=1000){
+        jogo.saldo-=1000;
+        jogo.imoveis++;
         log("Imóvel comprado");
     }
 }
 
 function receberAluguel(){
-    let ganho=data.imoveis*120;
+    let ganho=jogo.imoveis*120;
     let taxa=ganho*0.0023;
-    data.saldo+=ganho-taxa;
-    data.fundo+=taxa;
+    jogo.saldo+=ganho-taxa;
+    jogo.fundo+=taxa;
     log("Aluguel recebido");
 }
 
 function comprarAcao(){
-    if(data.saldo>=data.precoAcao){
-        data.saldo-=data.precoAcao;
-        data.investido+=data.precoAcao;
-        log("Compra de ação");
+    if(jogo.saldo>=jogo.precoAcao){
+        jogo.saldo-=jogo.precoAcao;
+        jogo.investido+=jogo.precoAcao;
+        log("Ação comprada");
     }
 }
 
 function venderAcao(){
-    if(data.investido>=data.precoAcao){
-        data.saldo+=data.precoAcao;
-        data.investido-=data.precoAcao;
-        log("Venda de ação");
+    if(jogo.investido>=jogo.precoAcao){
+        jogo.saldo+=jogo.precoAcao;
+        jogo.investido-=jogo.precoAcao;
+        log("Ação vendida");
     }
 }
 
-setInterval(variacaoMercado, 10000);
+setInterval(mercado,10000);
 render();
 </script>
 
