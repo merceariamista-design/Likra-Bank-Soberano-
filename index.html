@@ -16,6 +16,7 @@
 <h3>Conta do Usuário</h3>
 <p>Saldo: <strong id="saldo"></strong> K$</p>
 <p>Investido: <strong id="investido"></strong> K$</p>
+<p>Inflação: <strong id="inflacao"></strong>%</p>
 </div>
 
 <div class="box">
@@ -44,19 +45,18 @@ Preço: <span id="baxe"></span><br>
 </div>
 
 <div class="box">
-<h3>Fundo Soberano Likra</h3>
+<h3>Banco Central do Likra</h3>
+<p>Política Monetária: <strong id="politica"></strong></p>
+<p class="small">Controla inflação, juros e mercado</p>
+</div>
+
+<div class="box">
+<h3>Fundo Soberano</h3>
 <p>Saldo: <strong id="fundo"></strong> K$</p>
 </div>
 
 <div class="box">
-<h3>Empréstimos</h3>
-<input id="valorEmprestimo" type="number" placeholder="Valor do empréstimo">
-<button onclick="solicitarEmprestimo()">Solicitar</button>
-<button onclick="pagarEmprestimo()">Pagar</button>
-</div>
-
-<div class="box">
-<h3>Imóveis Likra</h3>
+<h3>Imóveis</h3>
 <button onclick="comprarImovel()">Comprar Imóvel</button>
 <button onclick="receberAluguel()">Receber Aluguel</button>
 </div>
@@ -70,12 +70,18 @@ Preço: <span id="baxe"></span><br>
 </div>
 
 <div class="box">
+<h3>Eventos Econômicos</h3>
+<p id="eventoAtual" class="small"></p>
+</div>
+
+<div class="box">
 <h3>Histórico</h3>
 <div id="historico" class="log"></div>
 </div>
 
 </div>
 
+<script src="bancoCentral.js"></script>
 <script src="game.js"></script>
 </body>
 </html>
