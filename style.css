@@ -11,9 +11,7 @@ header{
     font-size:26px;
     font-weight:bold;
 }
-.container{
-    padding:15px;
-}
+.container{padding:15px}
 .box{
     background:#161616;
     border:1px solid #333;
@@ -31,16 +29,7 @@ button{
     margin:3px 0;
 }
 button:hover{background:#0f6ddb}
-input{
-    width:100%;
-    padding:6px;
-    margin:5px 0;
-}
-.flex{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-}
+.flex{display:flex;gap:10px;flex-wrap:wrap}
 .small{font-size:13px;color:#aaa}
 .log{
     max-height:220px;
