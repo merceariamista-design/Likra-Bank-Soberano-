@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Likra Bank K$</title>
+<style>
+body {
+    background:#0e0e0e;
+    color:#e0e0e0;
+    font-family: Arial, sans-serif;
+}
+header {
+    background:#111;
+    padding:15px;
+    text-align:center;
+    font-size:24px;
+    font-weight:bold;
+}
+.container {
+    padding:15px;
+}
+.box {
+    border:1px solid #333;
+    padding:12px;
+    margin-bottom:15px;
+    border-radius:6px;
+    background:#161616;
+}
+button {
+    background:#1f8cff;
+    border:none;
+    color:#fff;
+    padding:8px 12px;
+    margin:4px 0;
+    cursor:pointer;
+    border-radius:4px;
+}
+button:hover {
+    background:#0f6edb;
+}
+input {
+    padding:6px;
+    width:100%;
+    margin:5px 0;
+}
+.flex {
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+}
+.small {
+    font-size:13px;
+    color:#aaa;
+}
+.green { color:#3cff6a; }
+.red { color:#ff4d4d; }
+</style>
+</head>
+
+<body>
+
+<header>LIKRA BANK K$</header>
+
+<div class="container">
+
+<!-- SALDO -->
+<div class="box">
+    <h3>Saldo do Usuário</h3>
+    <p>Likra: <strong id="saldo">3000</strong> K$</p>
+</div>
+
+<!-- CÂMBIO -->
+<div class="box">
+    <h3>Câmbio Internacional</h3>
+    <p class="small">Taxa: 3,7% por operação</p>
+
+    <div class="flex">
+        <div>
+            <strong>Ouro (OR £)</strong><br>
+            Preço: 23,66<br>
+            <button onclick="comprar('ouro')">Comprar</button>
+            <button onclick="vender('ouro')">Vender</button>
+        </div>
+
+        <div>
+            <strong>Petra (PT €)</strong><br>
+            Preço: 34,89<br>
+            <button onclick="comprar('petra')">Comprar</button>
+            <button onclick="vender('petra')">Vender</button>
+        </div>
+
+        <div>
+            <strong>Baxe (BX ¥)</strong><br>
+            Preço: 4,89<br>
+            <button onclick="comprar('baxe')">Comprar</button>
+            <button onclick="vender('baxe')">Vender</button>
+        </div>
+    </div>
+</div>
+
+<!-- FUNDO SOBERANO -->
+<div class="box">
+    <h3>Fundo Soberano Likra</h3>
+    <p>Saldo: <strong id="fundo">7.000.000.000</strong> K$</p>
+    <p class="small">Recebe taxas de câmbio, transferências e ativos</p>
+
+    <button onclick="abaFundo()">Informações do Fundo</button>
+</div>
+
+<!-- EMPRÉSTIMO -->
+<div class="box">
+    <h3>Empréstimos</h3>
+    <p class="small">Juros: 1,8% ao dia</p>
+
+    <input type="number" id="valorEmprestimo" placeholder="Valor do empréstimo">
+    <button onclick="emprestimo()">Solicitar Empréstimo</button>
+    <button onclick="pagarEmprestimo()">Pagar Empréstimo</button>
+</div>
+
+<!-- TÍTULOS -->
+<div class="box">
+    <h3>Títulos Likra Bank</h3>
+    <p class="small">0,6% de juros mensal</p>
+    <button onclick="emitirTitulo()">Emitir Título</button>
+</div>
+
+<!-- IMÓVEIS -->
+<div class="box">
+    <h3>Imóveis Likra</h3>
+    <p class="small">Taxa sobre aluguel: 0,23%</p>
+    <button onclick="comprarImovel()">Comprar Imóvel</button>
+</div>
+
+<!-- AÇÕES -->
+<div class="box">
+    <h3>Ativos Likra Bank</h3>
+    <p>Ações emitidas: 100.000</p>
+    <p>Preço atual: <strong id="precoAcao">100</strong> K$</p>
+    <p>Variação: <span id="variacao" class="green">+0,0%</span></p>
+
+    <button onclick="comprarAcao()">Comprar Ações</button>
+    <button onclick="venderAcao()">Vender Ações</button>
+
+    <p class="small">Investido: <span id="investido">0</span> K$</p>
+</div>
+
+</div>
+
+<script>
+let saldo = 3000;
+let fundo = 7000000000;
+let emprestimoAtivo = 0;
+let precoAcao = 100;
+let investido = 0;
+
+const precos = {
+    ouro: 23.66,
+    petra: 34.89,
+    baxe: 4.89
+};
+
+function atualizarTela() {
+    document.getElementById("saldo").innerText = saldo.toFixed(2);
+    document.getElementById("fundo").innerText = fundo.toLocaleString();
+    document.getElementById("precoAcao").innerText = precoAcao.toFixed(2);
+    document.getElementById("investido").innerText = investido.toFixed(2);
+}
+
+function comprar(moeda) {
+    let custo = precos[moeda] * 1.037;
+    if (saldo >= custo) {
+        saldo -= custo;
+        fundo += precos[moeda] * 0.037;
+        atualizarTela();
+    }
+}
+
+function vender(moeda) {
+    let ganho = precos[moeda] * 0.963;
+    saldo += ganho;
+    fundo += precos[moeda] * 0.037;
+    atualizarTela();
+}
+
+function emprestimo() {
+    let valor = Number(document.getElementById("valorEmprestimo").value);
+    if (valor > 0) {
+        emprestimoAtivo += valor;
+        saldo += valor;
+        atualizarTela();
+    }
+}
+
+function pagarEmprestimo() {
+    let juros = emprestimoAtivo * 0.018;
+    let total = emprestimoAtivo + juros;
+    if (saldo >= total) {
+        saldo -= total;
+        fundo += juros;
+        emprestimoAtivo = 0;
+        atualizarTela();
+    }
+}
+
+function emitirTitulo() {
+    alert("Título emitido com sucesso. Histórico registrado.");
+}
+
+function comprarImovel() {
+    alert("Sistema de imóveis será expandido na próxima versão.");
+}
+
+function comprarAcao() {
+    if (saldo >= precoAcao) {
+        saldo -= precoAcao;
+        investido += precoAcao;
+        atualizarTela();
+    }
+}
+
+function venderAcao() {
+    if (investido >= precoAcao) {
+        saldo += precoAcao;
+        investido -= precoAcao;
+        atualizarTela();
+    }
+}
+
+function abaFundo() {
+    alert("Fundo soberano arrecada todas as taxas do sistema.");
+}
+
+atualizarTela();
+</script>
+
+</body>
+  </html>
