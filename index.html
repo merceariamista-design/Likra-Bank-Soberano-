@@ -8,34 +8,39 @@
 
 <body>
 
-<header>LIKRA BANK K$ — Nível 4</header>
+<header>LIKRA BANK K$ — Nível 5</header>
 
 <div class="container">
 
 <div class="box">
-<h3>Conta do Jogador</h3>
+<h3>Conta</h3>
 <p>Saldo: <strong id="saldo"></strong> K$</p>
 <p>Investido: <strong id="investido"></strong> K$</p>
 <p>Inflação: <strong id="inflacao"></strong>%</p>
-<p>Governo Atual: <strong id="governo"></strong></p>
+<p>Governo: <strong id="governo"></strong></p>
 </div>
 
 <div class="box">
-<h3>Sistema Político</h3>
-<p>Presidente do Banco Central: <strong id="presidente"></strong></p>
-<button onclick="realizarEleicao()">Realizar Eleição</button>
+<h3>Câmbio</h3>
+<div id="cambio"></div>
 </div>
 
 <div class="box">
-<h3>Mercado Global</h3>
-<p>Política Monetária: <strong id="politica"></strong></p>
-<p>Evento: <span id="eventoAtual" class="small"></span></p>
+<h3>Empréstimos</h3>
+<input id="valorEmprestimo" type="number" placeholder="Valor">
+<button onclick="emprestimo()">Solicitar</button>
+<button onclick="pagarEmprestimo()">Pagar</button>
 </div>
 
 <div class="box">
-<h3>Empresas Privadas</h3>
-<button onclick="criarEmpresa()">Criar Empresa</button>
-<div id="empresas" class="small"></div>
+<h3>Títulos Likra Bank</h3>
+<button onclick="emitirTitulo()">Emitir Título</button>
+</div>
+
+<div class="box">
+<h3>Imóveis Likra</h3>
+<button onclick="comprarImovel()">Comprar Imóvel</button>
+<button onclick="receberAluguel()">Receber Aluguel</button>
 </div>
 
 <div class="box">
@@ -47,20 +52,17 @@
 </div>
 
 <div class="box">
-<h3>IA Econômica</h3>
-<div id="iaStatus" class="small"></div>
-</div>
-
-<div class="box">
 <h3>Histórico</h3>
 <div id="historico" class="log"></div>
 </div>
 
 </div>
 
-<script src="mundo.js"></script>
-<script src="empresas.js"></script>
-<script src="iaEconomica.js"></script>
 <script src="politica.js"></script>
 <script src="bancoCentral.js"></script>
-<script
+<script src="empresas.js"></script>
+<script src="iaEconomica.js"></script>
+<script src="mercado.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
