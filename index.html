@@ -8,7 +8,7 @@
 
 <body>
 
-<header>LIKRA BANK K$ — Nível 3</header>
+<header>LIKRA BANK K$ — Nível 4</header>
 
 <div class="container">
 
@@ -16,18 +16,26 @@
 <h3>Conta do Jogador</h3>
 <p>Saldo: <strong id="saldo"></strong> K$</p>
 <p>Investido: <strong id="investido"></strong> K$</p>
-<p>Inflação Global: <strong id="inflacao"></strong>%</p>
+<p>Inflação: <strong id="inflacao"></strong>%</p>
+<p>Governo Atual: <strong id="governo"></strong></p>
+</div>
+
+<div class="box">
+<h3>Sistema Político</h3>
+<p>Presidente do Banco Central: <strong id="presidente"></strong></p>
+<button onclick="realizarEleicao()">Realizar Eleição</button>
 </div>
 
 <div class="box">
 <h3>Mercado Global</h3>
 <p>Política Monetária: <strong id="politica"></strong></p>
-<p>Evento Atual: <span id="eventoAtual" class="small"></span></p>
+<p>Evento: <span id="eventoAtual" class="small"></span></p>
 </div>
 
 <div class="box">
-<h3>Mapa Mundial Econômico</h3>
-<div id="mapa"></div>
+<h3>Empresas Privadas</h3>
+<button onclick="criarEmpresa()">Criar Empresa</button>
+<div id="empresas" class="small"></div>
 </div>
 
 <div class="box">
@@ -39,7 +47,7 @@
 </div>
 
 <div class="box">
-<h3>IA Econômica (Concorrentes)</h3>
+<h3>IA Econômica</h3>
 <div id="iaStatus" class="small"></div>
 </div>
 
@@ -51,8 +59,8 @@
 </div>
 
 <script src="mundo.js"></script>
+<script src="empresas.js"></script>
 <script src="iaEconomica.js"></script>
+<script src="politica.js"></script>
 <script src="bancoCentral.js"></script>
-<script src="game.js"></script>
-</body>
-</html>
+<script
