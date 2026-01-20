@@ -28,7 +28,6 @@ button{
     cursor:pointer;
 }
 button:hover{background:#0f6ddb}
-.small{font-size:13px;color:#aaa}
 .log{
     max-height:220px;
     overflow-y:auto;
@@ -36,5 +35,3 @@ button:hover{background:#0f6ddb}
     padding:8px;
     font-size:13px;
 }
-.green{color:#3cff6a}
-.red{color:#ff4d4d}
