@@ -2,7 +2,6 @@ let jogo = JSON.parse(localStorage.getItem("likraBank")) || {
     saldo:3000,
     investido:0,
     fundo:7000000000,
-    emprestimo:0,
     imoveis:0,
     moedas:{ ouro:23.66, petra:34.89, baxe:4.89 },
     precoAcao:100,
@@ -15,7 +14,7 @@ function salvar(){
 
 function log(txt){
     jogo.historico.unshift(new Date().toLocaleString()+" - "+txt);
-    if(jogo.historico.length>60) jogo.historico.pop();
+    if(jogo.historico.length>80) jogo.historico.pop();
     salvar();
     render();
 }
@@ -29,16 +28,16 @@ function render(){
     baxe.innerText=jogo.moedas.baxe.toFixed(2);
     precoAcao.innerText=jogo.precoAcao.toFixed(2);
     historico.innerHTML=jogo.historico.join("<br>");
+    inflacao.innerText=bancoCentral.inflacao.toFixed(2);
+    politica.innerText=bancoCentral.politica;
 }
 
 function mercado(){
-    for(let m in jogo.moedas){
-        jogo.moedas[m]*=(1+(Math.random()*0.04-0.02));
-    }
-    let v=(Math.random()*6-3).toFixed(2);
+    let v=(Math.random()*4-2).toFixed(2);
     jogo.precoAcao*=(1+v/100);
     variacao.innerText=v+"%";
     variacao.className=v>=0?"green":"red";
+    aplicarEvento();
     salvar();
     render();
 }
@@ -59,26 +58,6 @@ function venderMoeda(m){
     log("Venda de "+m);
 }
 
-function solicitarEmprestimo(){
-    let v=Number(valorEmprestimo.value);
-    if(v>0){
-        jogo.emprestimo+=v;
-        jogo.saldo+=v;
-        log("Empréstimo tomado: "+v);
-    }
-}
-
-function pagarEmprestimo(){
-    let juros=jogo.emprestimo*0.018;
-    let total=jogo.emprestimo+juros;
-    if(jogo.saldo>=total){
-        jogo.saldo-=total;
-        jogo.fundo+=juros;
-        jogo.emprestimo=0;
-        log("Empréstimo quitado");
-    }
-}
-
 function comprarImovel(){
     if(jogo.saldo>=1000){
         jogo.saldo-=1000;
@@ -88,10 +67,8 @@ function comprarImovel(){
 }
 
 function receberAluguel(){
-    let ganho=jogo.imoveis*120;
-    let taxa=ganho*0.0023;
-    jogo.saldo+=ganho-taxa;
-    jogo.fundo+=taxa;
+    let ganho=jogo.imoveis*120*(1-bancoCentral.inflacao/100);
+    jogo.saldo+=ganho;
     log("Aluguel recebido");
 }
 
@@ -111,5 +88,5 @@ function venderAcao(){
     }
 }
 
-setInterval(mercado,10000);
+setInterval(mercado,12000);
 render();
