@@ -8,57 +8,26 @@
 
 <body>
 
-<header>LIKRA BANK K$</header>
+<header>LIKRA BANK K$ — Nível 3</header>
 
 <div class="container">
 
 <div class="box">
-<h3>Conta do Usuário</h3>
+<h3>Conta do Jogador</h3>
 <p>Saldo: <strong id="saldo"></strong> K$</p>
 <p>Investido: <strong id="investido"></strong> K$</p>
-<p>Inflação: <strong id="inflacao"></strong>%</p>
+<p>Inflação Global: <strong id="inflacao"></strong>%</p>
 </div>
 
 <div class="box">
-<h3>Câmbio Internacional</h3>
-<p class="small">Taxa: 3,7%</p>
-<div class="flex">
-<div>
-<strong>Ouro (OR £)</strong><br>
-Preço: <span id="ouro"></span><br>
-<button onclick="comprarMoeda('ouro')">Comprar</button>
-<button onclick="venderMoeda('ouro')">Vender</button>
-</div>
-<div>
-<strong>Petra (PT €)</strong><br>
-Preço: <span id="petra"></span><br>
-<button onclick="comprarMoeda('petra')">Comprar</button>
-<button onclick="venderMoeda('petra')">Vender</button>
-</div>
-<div>
-<strong>Baxe (BX ¥)</strong><br>
-Preço: <span id="baxe"></span><br>
-<button onclick="comprarMoeda('baxe')">Comprar</button>
-<button onclick="venderMoeda('baxe')">Vender</button>
-</div>
-</div>
-</div>
-
-<div class="box">
-<h3>Banco Central do Likra</h3>
+<h3>Mercado Global</h3>
 <p>Política Monetária: <strong id="politica"></strong></p>
-<p class="small">Controla inflação, juros e mercado</p>
+<p>Evento Atual: <span id="eventoAtual" class="small"></span></p>
 </div>
 
 <div class="box">
-<h3>Fundo Soberano</h3>
-<p>Saldo: <strong id="fundo"></strong> K$</p>
-</div>
-
-<div class="box">
-<h3>Imóveis</h3>
-<button onclick="comprarImovel()">Comprar Imóvel</button>
-<button onclick="receberAluguel()">Receber Aluguel</button>
+<h3>Mapa Mundial Econômico</h3>
+<div id="mapa"></div>
 </div>
 
 <div class="box">
@@ -70,8 +39,8 @@ Preço: <span id="baxe"></span><br>
 </div>
 
 <div class="box">
-<h3>Eventos Econômicos</h3>
-<p id="eventoAtual" class="small"></p>
+<h3>IA Econômica (Concorrentes)</h3>
+<div id="iaStatus" class="small"></div>
 </div>
 
 <div class="box">
@@ -81,6 +50,8 @@ Preço: <span id="baxe"></span><br>
 
 </div>
 
+<script src="mundo.js"></script>
+<script src="iaEconomica.js"></script>
 <script src="bancoCentral.js"></script>
 <script src="game.js"></script>
 </body>
