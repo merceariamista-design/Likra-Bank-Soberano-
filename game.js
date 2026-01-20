@@ -11,7 +11,7 @@ function salvar(){
 
 function log(txt){
     jogo.historico.unshift(new Date().toLocaleString()+" - "+txt);
-    if(jogo.historico.length>100) jogo.historico.pop();
+    if(jogo.historico.length>120) jogo.historico.pop();
     salvar();
     render();
 }
@@ -22,8 +22,10 @@ function render(){
     precoAcao.innerText=jogo.precoAcao.toFixed(2);
     inflacao.innerText=bancoCentral.inflacao.toFixed(2);
     politica.innerText=bancoCentral.politica;
+    governo.innerText=governoAtual.nome;
+    presidente.innerText=bancoCentral.presidente;
     historico.innerHTML=jogo.historico.join("<br>");
-    renderMundo();
+    atualizarEmpresas();
 }
 
 function comprarAcao(){
@@ -42,16 +44,17 @@ function venderAcao(){
     }
 }
 
-function cicloGlobal(){
-    aplicarEvento();
+function cicloGeral(){
+    aplicarPolitica();
     agirIA();
-    let v=(Math.random()*5-2.5)/100;
-    jogo.precoAcao*=(1+v);
+    atualizarEmpresas();
+    let v=(Math.random()*4-2)/100;
+    jogo.precoAcao *= (1+v);
     variacao.innerText=(v*100).toFixed(2)+"%";
     variacao.className=v>=0?"green":"red";
     salvar();
     render();
 }
 
-setInterval(cicloGlobal,15000);
+setInterval(cicloGeral,15000);
 render();
