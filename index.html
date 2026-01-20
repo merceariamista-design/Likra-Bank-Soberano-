@@ -3,63 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Likra Bank K$</title>
-
-<style>
-body{
-    margin:0;
-    background:#0a0a0a;
-    color:#e5e5e5;
-    font-family:Arial, Helvetica, sans-serif;
-}
-header{
-    background:#111;
-    padding:15px;
-    text-align:center;
-    font-size:26px;
-    font-weight:bold;
-}
-.container{
-    padding:15px;
-}
-.box{
-    background:#161616;
-    border:1px solid #333;
-    border-radius:6px;
-    padding:12px;
-    margin-bottom:15px;
-}
-h3{margin-top:0}
-button{
-    background:#1f8cff;
-    border:none;
-    color:#fff;
-    padding:7px 12px;
-    border-radius:4px;
-    cursor:pointer;
-    margin:3px 0;
-}
-button:hover{background:#0f6ddb}
-input{
-    width:100%;
-    padding:6px;
-    margin:5px 0;
-}
-.flex{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-}
-.small{font-size:13px;color:#aaa}
-.log{
-    max-height:220px;
-    overflow-y:auto;
-    background:#0f0f0f;
-    padding:8px;
-    font-size:13px;
-}
-.green{color:#3cff6a}
-.red{color:#ff4d4d}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -76,7 +20,7 @@ input{
 
 <div class="box">
 <h3>Câmbio Internacional</h3>
-<p class="small">Taxa: 3,7% por operação</p>
+<p class="small">Taxa: 3,7%</p>
 <div class="flex">
 <div>
 <strong>Ouro (OR £)</strong><br>
@@ -102,166 +46,36 @@ Preço: <span id="baxe"></span><br>
 <div class="box">
 <h3>Fundo Soberano Likra</h3>
 <p>Saldo: <strong id="fundo"></strong> K$</p>
-<p class="small">Recebe todas as taxas do sistema</p>
 </div>
 
 <div class="box">
 <h3>Empréstimos</h3>
-<p class="small">1,8% de juros ao dia</p>
 <input id="valorEmprestimo" type="number" placeholder="Valor do empréstimo">
 <button onclick="solicitarEmprestimo()">Solicitar</button>
 <button onclick="pagarEmprestimo()">Pagar</button>
 </div>
 
 <div class="box">
-<h3>Títulos Likra Bank</h3>
-<p class="small">0,6% ao mês | Pagamento após 14 dias</p>
-<button onclick="emitirTitulo()">Emitir Título</button>
-</div>
-
-<div class="box">
 <h3>Imóveis Likra</h3>
-<p class="small">Taxa sobre aluguel: 0,23%</p>
-<button onclick="comprarImovel()">Comprar Imóvel (1000 K$)</button>
+<button onclick="comprarImovel()">Comprar Imóvel</button>
 <button onclick="receberAluguel()">Receber Aluguel</button>
 </div>
 
 <div class="box">
 <h3>Ações Likra Bank</h3>
-<p>Preço da ação: <strong id="precoAcao"></strong> K$</p>
+<p>Preço: <strong id="precoAcao"></strong> K$</p>
 <p>Variação: <span id="variacao"></span></p>
 <button onclick="comprarAcao()">Comprar</button>
 <button onclick="venderAcao()">Vender</button>
 </div>
 
 <div class="box">
-<h3>Histórico Financeiro</h3>
+<h3>Histórico</h3>
 <div id="historico" class="log"></div>
 </div>
 
 </div>
 
-<script>
-let jogo = JSON.parse(localStorage.getItem("likraBank")) || {
-    saldo:3000,
-    investido:0,
-    fundo:7000000000,
-    emprestimo:0,
-    imoveis:0,
-    moedas:{ ouro:23.66, petra:34.89, baxe:4.89 },
-    precoAcao:100,
-    historico:[]
-};
-
-function salvar(){
-    localStorage.setItem("likraBank", JSON.stringify(jogo));
-}
-
-function log(txt){
-    jogo.historico.unshift(new Date().toLocaleString()+" - "+txt);
-    if(jogo.historico.length>60) jogo.historico.pop();
-    salvar();
-    render();
-}
-
-function render(){
-    saldo.innerText=jogo.saldo.toFixed(2);
-    investido.innerText=jogo.investido.toFixed(2);
-    fundo.innerText=jogo.fundo.toLocaleString();
-    ouro.innerText=jogo.moedas.ouro.toFixed(2);
-    petra.innerText=jogo.moedas.petra.toFixed(2);
-    baxe.innerText=jogo.moedas.baxe.toFixed(2);
-    precoAcao.innerText=jogo.precoAcao.toFixed(2);
-    historico.innerHTML=jogo.historico.join("<br>");
-}
-
-function mercado(){
-    for(let m in jogo.moedas){
-        jogo.moedas[m]*=(1+(Math.random()*0.04-0.02));
-    }
-    let v=(Math.random()*6-3).toFixed(2);
-    jogo.precoAcao*=(1+v/100);
-    variacao.innerText=v+"%";
-    variacao.className=v>=0?"green":"red";
-    salvar();
-    render();
-}
-
-function comprarMoeda(m){
-    let custo=jogo.moedas[m]*1.037;
-    if(jogo.saldo>=custo){
-        jogo.saldo-=custo;
-        jogo.fundo+=jogo.moedas[m]*0.037;
-        log("Compra de "+m);
-    }
-}
-
-function venderMoeda(m){
-    let ganho=jogo.moedas[m]*0.963;
-    jogo.saldo+=ganho;
-    jogo.fundo+=jogo.moedas[m]*0.037;
-    log("Venda de "+m);
-}
-
-function solicitarEmprestimo(){
-    let v=Number(valorEmprestimo.value);
-    if(v>0){
-        jogo.emprestimo+=v;
-        jogo.saldo+=v;
-        log("Empréstimo tomado: "+v);
-    }
-}
-
-function pagarEmprestimo(){
-    let juros=jogo.emprestimo*0.018;
-    let total=jogo.emprestimo+juros;
-    if(jogo.saldo>=total){
-        jogo.saldo-=total;
-        jogo.fundo+=juros;
-        jogo.emprestimo=0;
-        log("Empréstimo quitado");
-    }
-}
-
-function emitirTitulo(){
-    log("Título emitido");
-}
-
-function comprarImovel(){
-    if(jogo.saldo>=1000){
-        jogo.saldo-=1000;
-        jogo.imoveis++;
-        log("Imóvel comprado");
-    }
-}
-
-function receberAluguel(){
-    let ganho=jogo.imoveis*120;
-    let taxa=ganho*0.0023;
-    jogo.saldo+=ganho-taxa;
-    jogo.fundo+=taxa;
-    log("Aluguel recebido");
-}
-
-function comprarAcao(){
-    if(jogo.saldo>=jogo.precoAcao){
-        jogo.saldo-=jogo.precoAcao;
-        jogo.investido+=jogo.precoAcao;
-        log("Ação comprada");
-    }
-}
-
-function venderAcao(){
-    if(jogo.investido>=jogo.precoAcao){
-        jogo.saldo+=jogo.precoAcao;
-        jogo.investido-=jogo.precoAcao;
-        log("Ação vendida");
-    }
-}
-
-setInterval(mercado,10000);
-render();
-</script>
-
+<script src="game.js"></script>
 </body>
 </html>
