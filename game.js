@@ -15,7 +15,7 @@ function salvar(){
 
 function log(txt){
     jogo.historico.unshift(new Date().toLocaleString()+" - "+txt);
-    if(jogo.historico.length>200) jogo.historico.pop();
+    if(jogo.historico.length>300) jogo.historico.pop();
     salvar();
     render();
 }
@@ -30,17 +30,20 @@ function render(){
     renderCambio();
 }
 
-function cicloSistema(){
+function cicloFinal(){
     aplicarPolitica();
     agirIA();
     agirMultiplayer();
+    operarBancos();
+    auditarSistema();
     validarConstituicao();
+    sincronizar();
 
-    jogo.precoAcao *= (1+(Math.random()*3-1.5)/100);
+    jogo.precoAcao *= (1+(Math.random()*2-1)/100);
 
     salvar();
     render();
 }
 
-setInterval(cicloSistema,15000);
+setInterval(cicloFinal,12000);
 render();
