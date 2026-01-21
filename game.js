@@ -1,9 +1,13 @@
 let jogo = JSON.parse(localStorage.getItem("likraBank")) || {
     saldo:3000,
     investido:0,
+    emprestimo:0,
+    imoveis:0,
     precoAcao:100,
     historico:[]
 };
+
+let fundo = 7000000000;
 
 function salvar(){
     localStorage.setItem("likraBank", JSON.stringify(jogo));
@@ -11,7 +15,7 @@ function salvar(){
 
 function log(txt){
     jogo.historico.unshift(new Date().toLocaleString()+" - "+txt);
-    if(jogo.historico.length>120) jogo.historico.pop();
+    if(jogo.historico.length>150) jogo.historico.pop();
     salvar();
     render();
 }
@@ -21,18 +25,49 @@ function render(){
     investido.innerText=jogo.investido.toFixed(2);
     precoAcao.innerText=jogo.precoAcao.toFixed(2);
     inflacao.innerText=bancoCentral.inflacao.toFixed(2);
-    politica.innerText=bancoCentral.politica;
     governo.innerText=governoAtual.nome;
-    presidente.innerText=bancoCentral.presidente;
     historico.innerHTML=jogo.historico.join("<br>");
-    atualizarEmpresas();
+    renderCambio();
+}
+
+function emprestimo(){
+    let v=Number(valorEmprestimo.value);
+    let juros = bancoCentral.jurosDiario;
+    jogo.emprestimo+=v;
+    jogo.saldo+=v;
+    log("Empréstimo tomado");
+}
+
+function pagarEmprestimo(){
+    let total = jogo.emprestimo * (1 + bancoCentral.jurosDiario);
+    if(jogo.saldo>=total){
+        jogo.saldo-=total;
+        fundo+=total-jogo.emprestimo;
+        jogo.emprestimo=0;
+        log("Empréstimo quitado");
+    }
+}
+
+function comprarImovel(){
+    if(jogo.saldo>=1000){
+        jogo.saldo-=1000;
+        jogo.imoveis++;
+        log("Imóvel comprado");
+    }
+}
+
+function receberAluguel(){
+    let ganho=jogo.imoveis*120*(1-bancoCentral.inflacao/100);
+    jogo.saldo+=ganho;
+    fundo+=ganho*0.0023;
+    log("Aluguel recebido");
 }
 
 function comprarAcao(){
     if(jogo.saldo>=jogo.precoAcao){
         jogo.saldo-=jogo.precoAcao;
         jogo.investido+=jogo.precoAcao;
-        log("Compra de ação Likra Bank");
+        log("Ação comprada");
     }
 }
 
@@ -40,21 +75,14 @@ function venderAcao(){
     if(jogo.investido>=jogo.precoAcao){
         jogo.saldo+=jogo.precoAcao;
         jogo.investido-=jogo.precoAcao;
-        log("Venda de ação Likra Bank");
+        log("Ação vendida");
     }
 }
 
-function cicloGeral(){
-    aplicarPolitica();
-    agirIA();
-    atualizarEmpresas();
-    let v=(Math.random()*4-2)/100;
-    jogo.precoAcao *= (1+v);
-    variacao.innerText=(v*100).toFixed(2)+"%";
-    variacao.className=v>=0?"green":"red";
+setInterval(()=>{
+    jogo.precoAcao*=(1+(Math.random()*4-2)/100);
     salvar();
     render();
-}
+},15000);
 
-setInterval(cicloGeral,15000);
 render();
