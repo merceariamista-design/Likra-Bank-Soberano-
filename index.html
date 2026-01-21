@@ -8,12 +8,11 @@
 
 <body>
 
-<header>LIKRA BANK K$ — Nível 5</header>
+<header>LIKRA BANK K$ — Nível 6</header>
 
 <div class="container">
 
 <div class="box">
-<h3>Conta</h3>
 <p>Saldo: <strong id="saldo"></strong> K$</p>
 <p>Investido: <strong id="investido"></strong> K$</p>
 <p>Inflação: <strong id="inflacao"></strong>%</p>
@@ -26,27 +25,8 @@
 </div>
 
 <div class="box">
-<h3>Empréstimos</h3>
-<input id="valorEmprestimo" type="number" placeholder="Valor">
-<button onclick="emprestimo()">Solicitar</button>
-<button onclick="pagarEmprestimo()">Pagar</button>
-</div>
-
-<div class="box">
-<h3>Títulos Likra Bank</h3>
-<button onclick="emitirTitulo()">Emitir Título</button>
-</div>
-
-<div class="box">
-<h3>Imóveis Likra</h3>
-<button onclick="comprarImovel()">Comprar Imóvel</button>
-<button onclick="receberAluguel()">Receber Aluguel</button>
-</div>
-
-<div class="box">
 <h3>Ações Likra Bank</h3>
 <p>Preço: <strong id="precoAcao"></strong> K$</p>
-<p>Variação: <span id="variacao"></span></p>
 <button onclick="comprarAcao()">Comprar</button>
 <button onclick="venderAcao()">Vender</button>
 </div>
@@ -62,6 +42,8 @@
 <script src="bancoCentral.js"></script>
 <script src="empresas.js"></script>
 <script src="iaEconomica.js"></script>
+<script src="multiplayer.js"></script>
+<script src="constituicao.js"></script>
 <script src="mercado.js"></script>
 <script src="game.js"></script>
 </body>
