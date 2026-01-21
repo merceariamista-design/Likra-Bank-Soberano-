@@ -1,16 +1,14 @@
-let jogadores = [
-    {nome:"Jogador A", saldo:5000, perfil:"conservador"},
-    {nome:"Jogador B", saldo:8000, perfil:"agressivo"},
-    {nome:"Jogador C", saldo:6000, perfil:"misto"}
-];
+let sessao = localStorage.getItem("likraSessao") || Math.random().toString(36).substring(2);
+localStorage.setItem("likraSessao", sessao);
 
-function agirMultiplayer(){
-    jogadores.forEach(j=>{
-        if(j.perfil==="agressivo"){
-            jogo.precoAcao *= 1.01;
-        }
-        if(j.perfil==="conservador"){
-            jogo.precoAcao *= 0.995;
-        }
-    });
+function sincronizar(){
+    let estadoGlobal = JSON.parse(localStorage.getItem("likraGlobal")) || {
+        precoAcao: jogo.precoAcao,
+        inflacao: bancoCentral.inflacao
+    };
+
+    estadoGlobal.precoAcao = (estadoGlobal.precoAcao + jogo.precoAcao)/2;
+    jogo.precoAcao = estadoGlobal.precoAcao;
+
+    localStorage.setItem("likraGlobal", JSON.stringify(estadoGlobal));
 }
