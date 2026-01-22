@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Banco Simulador Ultra</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;font-family:Arial;background:#f2f2f2}
+header{background:#ff7a00;color:#fff;padding:15px;text-align:center}
+.container{padding:15px}
+.card{background:#fff;border-radius:10px;padding:15px;margin-bottom:15px}
+input,select,button{width:100%;padding:12px;margin-top:8px;font-size:16px}
+button{background:#ff7a00;color:#fff;border:none;border-radius:6px}
+.saldo{font-size:20px;font-weight:bold}
+.hidden{display:none}
+.bar{background:#ff7a00;height:20px;margin:4px 0;color:#fff;font-size:12px}
+.admin{background:#222;color:#fff}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Banco Simulador Ultra</h2>
+<p>Economia • Jogo • Multimoedas</p>
+</header>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div class="card" id="loginCard">
+<input id="usuario" placeholder="Usuário">
+<input id="senha" type="password" placeholder="Senha">
+<label>
+<input type="checkbox" onclick="mostrarSenha()"> Mostrar senha
+</label>
+<button onclick="login()">Entrar / Criar</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+<div class="card">
+<select id="moedaAtual" onchange="atualizarTela()">
+<option value="K$">Likra (K$)</option>
+<option value="OR">Ouro (OR)</option>
+<option value="PT">Petra (PT)</option>
+<option value="BX">Baxe (BX)</option>
+</select>
+<div class="saldo">Saldo: <span id="saldo"></span> <span id="sigla"></span></div>
+</div>
+
+<div class="card">
+<input type="number" id="valor" placeholder="Valor">
+<button onclick="depositar()">Depositar</button>
+<button onclick="sacar()">Sacar</button>
+<button onclick="transferir()">Transferir</button>
+</div>
+
+<div class="card">
+<h4>Câmbio</h4>
+<select id="moedaDestino">
+<option value="K$">Likra</option>
+<option value="OR">Ouro</option>
+<option value="PT">Petra</option>
+<option value="BX">Baxe</option>
+</select>
+<button onclick="converter()">Converter</button>
+</div>
+
+<div class="card admin hidden" id="adminPanel">
+<h4>👑 Painel do Administrador</h4>
+<p>Usuários cadastrados: <span id="totalUsuarios"></span></p>
+</div>
+
+<div class="card">
+<h4>Histórico</h4>
+<div id="historico"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+let banco = JSON.parse(localStorage.getItem("banco")) || {
+  "admin": {
+    senha: "admin123",
+    contas: { "K$":99999,"OR":9999,"PT":9999,"BX":9999 },
+    historico: ["👑 Conta administrador criada"]
+  }
+};
+
+let usuarioAtual = "";
+
+let taxas = { "K$":1, "OR":4, "PT":6, "BX":0.8 };
+
+function mostrarSenha(){
+  senha.type = senha.type === "password" ? "text" : "password";
+}
+
+function login(){
+  let u=usuario.value, s=senha.value;
+  if(!u||!s) return;
+
+  if(!banco[u]){
+    banco[u]={senha:s,contas:{K$:1000,OR:200,PT:150,BX:500},historico:[]};
+  }
+
+  if(banco[u].senha!==s){
+    alert("Senha incorreta"); return;
+  }
+
+  usuarioAtual=u;
+  loginCard.classList.add("hidden");
+  app.classList.remove("hidden");
+
+  if(u==="admin"){
+    adminPanel.classList.remove("hidden");
+    totalUsuarios.innerText = Object.keys(banco).length;
+  }
+
+  atualizarTela();
+}
+
+function moedaAtual(){ return document.getElementById("moedaAtual").value }
+
+function atualizarTela(){
+  let u=banco[usuarioAtual], m=moedaAtual();
+  saldo.innerText=u.contas[m];
+  sigla.innerText=m;
+  historico.innerHTML=u.historico.join("<br>");
+  localStorage.setItem("banco",JSON.stringify(banco));
+}
+
+function depositar(){
+  let v=+valor.value;
+  if(v>0){
+    banco[usuarioAtual].contas[moedaAtual()]+=v;
+    banco[usuarioAtual].historico.unshift("➕ Depósito "+v);
+    atualizarTela();
+  }
+}
+
+function sacar(){
+  let v=+valor.value, m=moedaAtual();
+  if(v>0&&v<=banco[usuarioAtual].contas[m]){
+    banco[usuarioAtual].contas[m]-=v;
+    banco[usuarioAtual].historico.unshift("➖ Saque "+v);
+    atualizarTela();
+  } else alert("Saldo insuficiente");
+}
+
+function transferir(){ sacar(); }
+
+function converter(){
+  let o=moedaAtual(), d=moedaDestino.value, v=+valor.value;
+  if(o===d||v<=0||v>banco[usuarioAtual].contas[o]) return alert("Erro");
+  let base=v*taxas[o], conv=base/taxas[d];
+  banco[usuarioAtual].contas[o]-=v;
+  banco[usuarioAtual].contas[d]+=Number(conv.toFixed(2));
+  banco[usuarioAtual].historico.unshift(`💱 ${v} ${o} → ${conv.toFixed(2)} ${d}`);
+  atualizarTela();
+}
+</script>
+
+</body>
+</html>
