@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Banco Simulador Ultra</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;font-family:Arial;background:#f2f2f2}
+header{background:#ff7a00;color:#fff;padding:15px;text-align:center}
+.container{padding:15px}
+.card{background:#fff;border-radius:10px;padding:15px;margin-bottom:15px}
+input,select,button{width:100%;padding:12px;margin-top:8px;font-size:16px}
+button{background:#ff7a00;color:#fff;border:none;border-radius:6px}
+.saldo{font-size:20px;font-weight:bold}
+.hidden{display:none}
+.bar{background:#ff7a00;height:20px;margin:4px 0;color:#fff;font-size:12px}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Banco Simulador Ultra</h2>
+<p>Economia • Jogo • Multimoedas</p>
+</header>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div class="card" id="loginCard">
+<input id="usuario" placeholder="Usuário">
+<input id="senha" type="password" placeholder="Senha">
+<button onclick="login()">Entrar / Criar</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+<div class="card">
+<select id="moedaAtual" onchange="atualizarTela()">
+<option value="K$">Likra (K$)</option>
+<option value="OR">Ouro (OR)</option>
+<option value="PT">Petra (PT)</option>
+<option value="BX">Baxe (BX)</option>
+</select>
+<div class="saldo">Saldo: <span id="saldo"></span> <span id="sigla"></span></div>
+</div>
+
+<div class="card">
+<input type="number" id="valor" placeholder="Valor">
+<button onclick="depositar()">Depositar</button>
+<button onclick="sacar()">Sacar</button>
+<button onclick="transferir()">Transferir</button>
+</div>
+
+<div class="card">
+<h4>Câmbio</h4>
+<select id="moedaDestino">
+<option value="K$">Likra</option>
+<option value="OR">Ouro</option>
+<option value="PT">Petra</option>
+<option value="BX">Baxe</option>
+</select>
+<button onclick="converter()">Converter</button>
+</div>
+
+<div class="card">
+<h4>Banco Central</h4>
+<div id="taxas"></div>
+</div>
+
+<div class="card">
+<h4>Modo Jogo</h4>
+<button onclick="evento()">Evento Econômico</button>
+</div>
+
+<div class="card">
+<h4>Gráfico de Saldos</h4>
+<div id="grafico"></div>
+</div>
+
+<div class="card">
+<h4>Histórico</h4>
+<div id="historico"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+let banco = JSON.parse(localStorage.getItem("banco")) || {};
+let usuarioAtual = "";
+
+let taxas = { "K$":1, "OR":4, "PT":6, "BX":0.8 };
+
+// câmbio flutuante
+setInterval(()=>{
+  taxas.OR=(3+Math.random()*2).toFixed(2);
+  taxas.PT=(5+Math.random()*2).toFixed(2);
+  taxas.BX=(0.5+Math.random()).toFixed(2);
+  mostrarTaxas();
+},4000);
+
+function login(){
+  let u=usuario.value, s=senha.value;
+  if(!u||!s) return;
+  if(!banco[u]){
+    banco[u]={senha:s,contas:{K$:1000,OR:200,PT:150,BX:500},historico:[]};
+  }
+  if(banco[u].senha!==s){alert("Senha incorreta");return;}
+  usuarioAtual=u;
+  loginCard.classList.add("hidden");
+  app.classList.remove("hidden");
+  atualizarTela();
+}
+
+function moedaAtual(){return moedaAtual.value}
+
+function atualizarTela(){
+  let u=banco[usuarioAtual], m=moedaAtual();
+  saldo.innerText=u.contas[m];
+  sigla.innerText=m;
+  historico.innerHTML=u.historico.join("<br>");
+  grafico.innerHTML="";
+  for(let k in u.contas){
+    let w=u.contas[k]/10;
+    grafico.innerHTML+=`<div class="bar" style="width:${w}px">${k}: ${u.contas[k]}</div>`;
+  }
+  localStorage.setItem("banco",JSON.stringify(banco));
+}
+
+function depositar(){
+  let v=+valor.value;
+  if(v>0){
+    banco[usuarioAtual].contas[moedaAtual()]+=v;
+    banco[usuarioAtual].historico.unshift("➕ Depósito "+v);
+    atualizarTela();
+  }
+}
+
+function sacar(){
+  let v=+valor.value, m=moedaAtual();
+  if(v>0&&v<=banco[usuarioAtual].contas[m]){
+    banco[usuarioAtual].contas[m]-=v;
+    banco[usuarioAtual].historico.unshift("➖ Saque "+v);
+    atualizarTela();
+  } else alert("Saldo insuficiente");
+}
+
+function transferir(){
+  sacar();
+}
+
+function converter(){
+  let o=moedaAtual(), d=moedaDestino.value, v=+valor.value;
+  if(o===d||v<=0||v>banco[usuarioAtual].contas[o]) return alert("Erro");
+  let base=v*taxas[o], conv=base/taxas[d];
+  banco[usuarioAtual].contas[o]-=v;
+  banco[usuarioAtual].contas[d]+=Number(conv.toFixed(2));
+  banco[usuarioAtual].historico.unshift(`💱 ${v} ${o} → ${conv.toFixed(2)} ${d}`);
+  atualizarTela();
+}
+
+function evento(){
+  let ganho=Math.floor(Math.random()*200)-100;
+  banco[usuarioAtual].contas["K$"]+=ganho;
+  banco[usuarioAtual].historico.unshift("🎲 Evento: "+ganho+" K$");
+  atualizarTela();
+}
+
+function mostrarTaxas(){
+  taxasDiv.innerHTML="";
+}
+
+</script>
+
+</body>
+</html>
