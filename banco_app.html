@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Banco Simulador</title>
+<title>Banco Multimoedas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
@@ -29,7 +29,7 @@ header {
     font-size: 22px;
     font-weight: bold;
 }
-input {
+select, input {
     width: 100%;
     padding: 12px;
     margin-top: 10px;
@@ -47,9 +47,6 @@ button {
     background: #ff7a00;
     color: white;
 }
-button:active {
-    opacity: 0.8;
-}
 .historico {
     font-size: 14px;
 }
@@ -59,14 +56,23 @@ button:active {
 <body>
 
 <header>
-<h2>Banco Simulador</h2>
-<p>Moeda: K$</p>
+<h2>Banco Multimoedas</h2>
+<p>Simulador Financeiro</p>
 </header>
 
 <div class="container">
 
 <div class="card">
-<div class="saldo">Saldo: <span id="saldo">0</span> K$</div>
+<select id="moeda" onchange="atualizarTela()">
+<option value="K$">Likra (K$)</option>
+<option value="OR">Ouro (OR)</option>
+<option value="PT">Petra (PT)</option>
+<option value="BX">Baxe (BX)</option>
+</select>
+
+<div class="saldo">
+Saldo: <span id="saldo">0</span> <span id="sigla">K$</span>
+</div>
 </div>
 
 <div class="card">
@@ -84,30 +90,44 @@ button:active {
 </div>
 
 <script>
-let saldo = Number(localStorage.getItem("saldo")) || 1000;
+let contas = JSON.parse(localStorage.getItem("contas")) || {
+    "K$": 1000,
+    "OR": 500,
+    "PT": 300,
+    "BX": 800
+};
+
 let historico = JSON.parse(localStorage.getItem("historico")) || [];
 
+function moedaAtual() {
+    return document.getElementById("moeda").value;
+}
+
 function atualizarTela() {
-    document.getElementById("saldo").innerText = saldo;
+    let moeda = moedaAtual();
+    document.getElementById("saldo").innerText = contas[moeda];
+    document.getElementById("sigla").innerText = moeda;
     document.getElementById("historico").innerHTML = historico.join("<br>");
-    localStorage.setItem("saldo", saldo);
+    localStorage.setItem("contas", JSON.stringify(contas));
     localStorage.setItem("historico", JSON.stringify(historico));
 }
 
 function depositar() {
     let valor = Number(document.getElementById("valor").value);
+    let moeda = moedaAtual();
     if (valor > 0) {
-        saldo += valor;
-        historico.unshift("➕ Depósito: " + valor + " K$");
+        contas[moeda] += valor;
+        historico.unshift("➕ Depósito " + valor + " " + moeda);
         atualizarTela();
     }
 }
 
 function sacar() {
     let valor = Number(document.getElementById("valor").value);
-    if (valor > 0 && valor <= saldo) {
-        saldo -= valor;
-        historico.unshift("➖ Saque: " + valor + " K$");
+    let moeda = moedaAtual();
+    if (valor > 0 && valor <= contas[moeda]) {
+        contas[moeda] -= valor;
+        historico.unshift("➖ Saque " + valor + " " + moeda);
         atualizarTela();
     } else {
         alert("Saldo insuficiente");
@@ -116,9 +136,10 @@ function sacar() {
 
 function transferir() {
     let valor = Number(document.getElementById("valor").value);
-    if (valor > 0 && valor <= saldo) {
-        saldo -= valor;
-        historico.unshift("🔁 Transferência: " + valor + " K$");
+    let moeda = moedaAtual();
+    if (valor > 0 && valor <= contas[moeda]) {
+        contas[moeda] -= valor;
+        historico.unshift("🔁 Transferência " + valor + " " + moeda);
         atualizarTela();
     } else {
         alert("Saldo insuficiente");
