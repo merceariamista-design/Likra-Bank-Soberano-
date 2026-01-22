@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Banco Simulador Completo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { margin:0; font-family:Arial; background:#f2f2f2; }
+header { background:#ff7a00; color:#fff; padding:15px; text-align:center; }
+.container { padding:15px; }
+.card { background:#fff; border-radius:10px; padding:15px; margin-bottom:15px; }
+input, select, button {
+  width:100%; padding:12px; margin-top:8px; font-size:16px;
+}
+button { background:#ff7a00; color:#fff; border:none; border-radius:6px; }
+.saldo { font-size:20px; font-weight:bold; }
+.hidden { display:none; }
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Banco Simulador</h2>
+<p>App Financeiro Completo</p>
+</header>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div class="card" id="loginCard">
+<input id="usuario" placeholder="Nome do usuário">
+<button onclick="login()">Entrar</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+<div class="card">
+<select id="moedaAtual" onchange="atualizarTela()">
+<option value="K$">Likra (K$)</option>
+<option value="OR">Ouro (OR)</option>
+<option value="PT">Petra (PT)</option>
+<option value="BX">Baxe (BX)</option>
+</select>
+<div class="saldo">Saldo: <span id="saldo"></span> <span id="sigla"></span></div>
+</div>
+
+<div class="card">
+<input type="number" id="valor" placeholder="Valor">
+<button onclick="depositar()">Depositar</button>
+<button onclick="sacar()">Sacar</button>
+</div>
+
+<div class="card">
+<h4>Câmbio</h4>
+<select id="moedaDestino">
+<option value="K$">Likra (K$)</option>
+<option value="OR">Ouro (OR)</option>
+<option value="PT">Petra (PT)</option>
+<option value="BX">Baxe (BX)</option>
+</select>
+<button onclick="converter()">Converter</button>
+</div>
+
+<div class="card">
+<h4>Histórico</h4>
+<div id="historico"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+let usuarioAtual = "";
+let banco = JSON.parse(localStorage.getItem("banco")) || {};
+
+let taxas = {
+  "K$": 1,
+  "OR": 4,
+  "PT": 6,
+  "BX": 0.8
+};
+
+// câmbio flutuante automático
+setInterval(() => {
+  taxas.OR = (3 + Math.random()*2).toFixed(2);
+  taxas.PT = (5 + Math.random()*2).toFixed(2);
+  taxas.BX = (0.5 + Math.random()).toFixed(2);
+}, 5000);
+
+function login() {
+  let nome = document.getElementById("usuario").value;
+  if (!nome) return;
+
+  usuarioAtual = nome;
+  if (!banco[nome]) {
+    banco[nome] = {
+      contas: {"K$":1000,"OR":200,"PT":150,"BX":500},
+      historico:[]
+    };
+  }
+  document.getElementById("loginCard").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  atualizarTela();
+}
+
+function moedaAtual() {
+  return document.getElementById("moedaAtual").value;
+}
+
+function atualizarTela() {
+  let u = banco[usuarioAtual];
+  let m = moedaAtual();
+  document.getElementById("saldo").innerText = u.contas[m];
+  document.getElementById("sigla").innerText = m;
+  document.getElementById("historico").innerHTML = u.historico.join("<br>");
+  localStorage.setItem("banco", JSON.stringify(banco));
+}
+
+function depositar() {
+  let v = Number(valor.value);
+  if (v > 0) {
+    banco[usuarioAtual].contas[moedaAtual()] += v;
+    banco[usuarioAtual].historico.unshift("➕ Depósito " + v + " " + moedaAtual());
+    atualizarTela();
+  }
+}
+
+function sacar() {
+  let v = Number(valor.value);
+  let m = moedaAtual();
+  if (v > 0 && v <= banco[usuarioAtual].contas[m]) {
+    banco[usuarioAtual].contas[m] -= v;
+    banco[usuarioAtual].historico.unshift("➖ Saque " + v + " " + m);
+    atualizarTela();
+  } else alert("Saldo insuficiente");
+}
+
+function converter() {
+  let origem = moedaAtual();
+  let destino = moedaDestino.value;
+  let v = Number(valor.value);
+  if (origem === destino || v <= 0 || v > banco[usuarioAtual].contas[origem]) {
+    alert("Conversão inválida"); return;
+  }
+  let base = v * taxas[origem];
+  let convertido = base / taxas[destino];
+
+  banco[usuarioAtual].contas[origem] -= v;
+  banco[usuarioAtual].contas[destino] += Number(convertido.toFixed(2));
+  banco[usuarioAtual].historico.unshift(
+    `💱 ${v} ${origem} → ${convertido.toFixed(2)} ${destino}`
+  );
+  atualizarTela();
+}
+</script>
+
+</body>
+</html>
