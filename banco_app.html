@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Banco Simulador</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+}
+header {
+    background: #ff7a00;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+.container {
+    padding: 15px;
+}
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.saldo {
+    font-size: 22px;
+    font-weight: bold;
+}
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: none;
+    background: #ff7a00;
+    color: white;
+}
+button:active {
+    opacity: 0.8;
+}
+.historico {
+    font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Banco Simulador</h2>
+<p>Moeda: K$</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+<div class="saldo">Saldo: <span id="saldo">0</span> K$</div>
+</div>
+
+<div class="card">
+<input type="number" id="valor" placeholder="Digite o valor">
+<button onclick="depositar()">Depositar</button>
+<button onclick="sacar()">Sacar</button>
+<button onclick="transferir()">Transferir</button>
+</div>
+
+<div class="card historico">
+<strong>Histórico</strong><br>
+<div id="historico"></div>
+</div>
+
+</div>
+
+<script>
+let saldo = Number(localStorage.getItem("saldo")) || 1000;
+let historico = JSON.parse(localStorage.getItem("historico")) || [];
+
+function atualizarTela() {
+    document.getElementById("saldo").innerText = saldo;
+    document.getElementById("historico").innerHTML = historico.join("<br>");
+    localStorage.setItem("saldo", saldo);
+    localStorage.setItem("historico", JSON.stringify(historico));
+}
+
+function depositar() {
+    let valor = Number(document.getElementById("valor").value);
+    if (valor > 0) {
+        saldo += valor;
+        historico.unshift("➕ Depósito: " + valor + " K$");
+        atualizarTela();
+    }
+}
+
+function sacar() {
+    let valor = Number(document.getElementById("valor").value);
+    if (valor > 0 && valor <= saldo) {
+        saldo -= valor;
+        historico.unshift("➖ Saque: " + valor + " K$");
+        atualizarTela();
+    } else {
+        alert("Saldo insuficiente");
+    }
+}
+
+function transferir() {
+    let valor = Number(document.getElementById("valor").value);
+    if (valor > 0 && valor <= saldo) {
+        saldo -= valor;
+        historico.unshift("🔁 Transferência: " + valor + " K$");
+        atualizarTela();
+    } else {
+        alert("Saldo insuficiente");
+    }
+}
+
+atualizarTela();
+</script>
+
+</body>
+</html>
