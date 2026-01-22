@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Banco Multimoedas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+}
+header {
+    background: #ff7a00;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+.container {
+    padding: 15px;
+}
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.saldo {
+    font-size: 20px;
+    font-weight: bold;
+}
+select, input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 16px;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 16px;
+    background: #ff7a00;
+    color: white;
+    border: none;
+    border-radius: 6px;
+}
+.historico {
+    font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Banco Multimoedas</h2>
+<p>Câmbio Simulado</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+<label>Moeda atual</label>
+<select id="moedaAtual" onchange="atualizarTela()">
+<option value="K$">Likra (K$)</option>
+<option value="OR">Ouro (OR)</option>
+<option value="PT">Petra (PT)</option>
+<option value="BX">Baxe (BX)</option>
+</select>
+
+<div class="saldo">
+Saldo: <span id="saldo">0</span> <span id="sigla">K$</span>
+</div>
+</div>
+
+<div class="card">
+<label>Converter para</label>
+<select id="moedaDestino">
+<option value="K$">Likra (K$)</option>
+<option value="OR">Ouro (OR)</option>
+<option value="PT">Petra (PT)</option>
+<option value="BX">Baxe (BX)</option>
+</select>
+
+<input type="number" id="valor" placeholder="Valor para converter">
+<button onclick="converter()">Converter</button>
+</div>
+
+<div class="card historico">
+<strong>Histórico</strong><br>
+<div id="historico"></div>
+</div>
+
+</div>
+
+<script>
+let contas = JSON.parse(localStorage.getItem("contas")) || {
+    "K$": 1000,
+    "OR": 200,
+    "PT": 150,
+    "BX": 500
+};
+
+let historico = JSON.parse(localStorage.getItem("historico")) || [];
+
+// Taxas baseadas na K$
+const taxas = {
+    "K$": 1,
+    "OR": 4,
+    "PT": 6,
+    "BX": 0.8
+};
+
+function atualizarTela() {
+    let moeda = document.getElementById("moedaAtual").value;
+    document.getElementById("saldo").innerText = contas[moeda];
+    document.getElementById("sigla").innerText = moeda;
+    document.getElementById("historico").innerHTML = historico.join("<br>");
+    localStorage.setItem("contas", JSON.stringify(contas));
+    localStorage.setItem("historico", JSON.stringify(historico));
+}
+
+function converter() {
+    let origem = document.getElementById("moedaAtual").value;
+    let destino = document.getElementById("moedaDestino").value;
+    let valor = Number(document.getElementById("valor").value);
+
+    if (origem === destino) {
+        alert("Escolha moedas diferentes");
+        return;
+    }
+
+    if (valor <= 0 || valor > contas[origem]) {
+        alert("Saldo insuficiente");
+        return;
+    }
+
+    // Converter para base K$
+    let emBase = valor * taxas[origem];
+    // Converter para moeda destino
+    let convertido = emBase / taxas[destino];
+
+    contas[origem] -= valor;
+    contas[destino] += Number(convertido.toFixed(2));
+
+    historico.unshift(
+        `💱 ${valor} ${origem} → ${convertido.toFixed(2)} ${destino}`
+    );
+
+    atualizarTela();
+}
+
+atualizarTela();
+</script>
+
+</body>
+  </html>
